@@ -29,9 +29,6 @@ for i in Roms/$EXTENSION; do
     screencapture "Test/${i}.png" ## need to capture window not whole screen
     ;;
     Linux)
-<<<<<<< HEAD
-    import -windows "$WINDOWID" "Test/${i}.png"
-=======
     	import -windows "$TARGET" "Test/${i}.png" 
 		flatpak run com.obsproject.Studio --minimize-to-tray --disable-shutdown-check --startrecording --profile Daedalus &
 		sleep 5
@@ -45,7 +42,6 @@ for i in Roms/$EXTENSION; do
 		file=$(ls -1rt $HOME/*.mkv)
 		ffmpeg -y -i "$file" "Test/${i:0:-4}.mp4"
 		rm -f "$file"
->>>>>>> 302934d (added 30 second videos)
     ;;
     default)
     echo "Screen capture software needed"
