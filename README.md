@@ -9,3 +9,15 @@ It works by parsing in the roms folder as a list, taking a screenshot using the 
 This can be useful for debugging purposes and seeing if there are any questionable roms that don't work.
 
 
+# Linux
+
+```sh
+flatpak install com.obsproject.Studio
+```
+
+* Open OBS once to setup for recording, then create a scene called `daedalus`, save and close.
+
+* Run it and wait
+```
+./batch.sh
+```

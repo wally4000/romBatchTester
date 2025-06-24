@@ -10,11 +10,11 @@ mkdir -p Test/Roms
 cat <<EOF > test_results.html
 <html>
 <title> DaedalusX64 Test Results $(date) </title>
-<table>
+<table border="1">
 <tr>
 <td>Game Name:</td>
-<td></td>
 <td>Screenshot</td>
+<td>Gameplay</td>
 </tr>
 EOF
 
@@ -29,7 +29,19 @@ for i in Roms/$EXTENSION; do
     screencapture "Test/${i}.png" ## need to capture window not whole screen
     ;;
     Linux)
-    import -windows "$WINDOWID" "Test/${i}.png"
+    	import -windows "$TARGET" "Test/${i}.png" 
+		flatpak run com.obsproject.Studio --minimize-to-tray --disable-shutdown-check --startrecording --profile Daedalus &
+		sleep 5
+		OBS_PID=$(ps -ef | awk '{if($8=="obs"){print $2}}')
+		echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+		echo " OBS : $OBS_PID"
+		echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+		sleep 27 # makes the video 30 seconds
+		kill $OBS_PID
+		sleep 2
+		file=$(ls -1rt $HOME/*.mkv)
+		ffmpeg -y -i "$file" "Test/${i:0:-4}.mp4"
+		rm -f "$file"
     ;;
     default)
     echo "Screen capture software needed"
@@ -40,13 +52,19 @@ for i in Roms/$EXTENSION; do
 cat <<EOF >> test_results.html
 <tr>
 <td>${i:5:-4}</td>
-<td></td>
-<td><img src="Test/${i}.png" width="320" height="200"> </td>
+<td><img src="Test/${i}.png" width="320" height="200"></td>
+<td>
+  <video width="320" height="200" controls>
+    <source src="Test/${i:0:-4}.mp4" type="video/mp4"
+  </video>
+</td>
 </tr>
 EOF
+
 
 done
 
 cat <<EOF >> test_results.html
+</table>
 </html>
 EOF
