@@ -1,6 +1,7 @@
 #!/bin/bash
 
 TARGET=daedalus
+WINDOWID=daedalus
 EXTENSION="*.z64"
 
 mkdir -p Test/Roms
@@ -28,7 +29,7 @@ for i in Roms/$EXTENSION; do
     screencapture "Test/${i}.png" ## need to capture window not whole screen
     ;;
     Linux)
-    import -windows "$TARGET" "Test/${i}.png"
+    import -windows "$WINDOWID" "Test/${i}.png"
     ;;
     default)
     echo "Screen capture software needed"
