@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET=daedalus
+TARGET=(./daedalus --fullscreen)
 WINDOWID=daedalus
 EXTENSION="*.z64"
 
@@ -20,13 +20,14 @@ EOF
 
 for i in Roms/$EXTENSION; do
     touch "Test/${i}.txt"
-    ./$TARGET "$i" > "Test/${i}.txt" &
+"${TARGET[@]}" "$i" > "Test/${i}.txt" &
     pid=$!
     sleep 10
     case $(uname -s) in
-
     Darwin)
-    screencapture "Test/${i}.png" ## need to capture window not whole screen
+    echo "Darwin"
+    screencapture -D 1 "Test/${i}.png" 
+    screencapture -D 1 -v -V 30 -g "Test/${i}.mp4" 
     ;;
     Linux)
     	import -windows "$TARGET" "Test/${i}.png" 
