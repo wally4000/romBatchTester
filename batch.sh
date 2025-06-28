@@ -15,6 +15,7 @@ cat <<EOF > test_results.html
 <td>Game Name:</td>
 <td>Screenshot</td>
 <td>Gameplay</td>
+<td>Debug Log</td>
 </tr>
 EOF
 
@@ -30,7 +31,7 @@ for i in Roms/$EXTENSION; do
     screencapture -D 1 -v -V 30 -g "Test/${i}.mp4" 
     ;;
     Linux)
-    	import -windows "$TARGET" "Test/${i}.png" 
+    	import -windows "$WINDOWID" "Test/${i}.png" 
 		flatpak run com.obsproject.Studio --minimize-to-tray --disable-shutdown-check --startrecording --profile Daedalus &
 		sleep 5
 		OBS_PID=$(ps -ef | awk '{if($8=="obs"){print $2}}')
@@ -41,7 +42,7 @@ for i in Roms/$EXTENSION; do
 		kill $OBS_PID
 		sleep 2
 		file=$(ls -1rt $HOME/*.mkv)
-		ffmpeg -y -i "$file" "Test/${i:0:-4}.mp4"
+		ffmpeg -y -i "$file" "Test/${i:0:-4}.webm"
 		rm -f "$file"
     ;;
     default)
@@ -56,13 +57,17 @@ cat <<EOF >> test_results.html
 <td><img src="Test/${i}.png" width="320" height="200"></td>
 <td>
   <video width="320" height="200" controls>
-    <source src="Test/${i:0:-4}.mp4" type="video/mp4"
+    <source src="Test/${i:0:-4}.mp4" type="video/mp4">
   </video>
+</td>
+<td>
+<pre>
+$(tail -n 5 "Test/${i}.txt" | tr '\r' '\n' | perl -pe 's/\e\[[0-9;?]*[a-zA-Z]//g')
+<a href="Test/${i}.txt">See more</a>
+</pre>
 </td>
 </tr>
 EOF
-
-
 done
 
 cat <<EOF >> test_results.html
