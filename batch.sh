@@ -1,8 +1,9 @@
 #!/bin/bash
 
-TARGET=(./daedalus --fullscreen)
-WINDOWID=daedalus
-EXTENSION="*.z64"
+TARGET=(./daedalus --fullscreen) # Boot target 
+
+EXTENSION="*.z64" # Targeted file extension
+SLEEP_TIME=10 #Wait for X seconds to pass boot logos
 
 mkdir -p Test/Roms
 
@@ -21,9 +22,10 @@ EOF
 
 for i in Roms/$EXTENSION; do
     touch "Test/${i}.txt"
-"${TARGET[@]}" "$i" > "Test/${i}.txt" &
+    "${TARGET[@]}" "$i" > "Test/${i}.txt" &
     pid=$!
-    sleep 10
+    sleep $SLEEP_TIME
+
     case $(uname -s) in
     Darwin)
     echo "Darwin"
@@ -31,7 +33,7 @@ for i in Roms/$EXTENSION; do
     screencapture -D 1 -v -V 30 -g "Test/${i}.mp4" 
     ;;
     Linux)
-    	import -windows "$WINDOWID" "Test/${i}.png" 
+    import -windows "$WINDOWID" "Test/${i}.png" 
 		flatpak run com.obsproject.Studio --minimize-to-tray --disable-shutdown-check --startrecording --profile Daedalus &
 		sleep 5
 		OBS_PID=$(ps -ef | awk '{if($8=="obs"){print $2}}')
@@ -44,7 +46,10 @@ for i in Roms/$EXTENSION; do
 		file=$(ls -1rt $HOME/*.mkv)
 		ffmpeg -y -i "$file" "Test/${i:0:-4}.webm"
 		rm -f "$file"
-    ;;
+
+    # Grab Screenshot from captured footage
+    ffmpeg -y -ss 00:00:10 -i "Test/${i:0:-4}.webm" -frames:v 1 "Test/${i}.png"
+	;;
     default)
     echo "Screen capture software needed"
     ;;
